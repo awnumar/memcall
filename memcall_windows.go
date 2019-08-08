@@ -42,9 +42,7 @@ func Alloc(n int) ([]byte, error) {
 	b := _getBytes(ptr, n, n)
 
 	// Wipe it just in case there is some remnant data.
-	for i := range b {
-		b[i] = 0
-	}
+	wipe(b)
 
 	// Return the allocated memory.
 	return b, nil
@@ -53,14 +51,12 @@ func Alloc(n int) ([]byte, error) {
 // Free deallocates the byte slice specified.
 func Free(b []byte) error {
 	// Make the memory region readable and writable.
-	if err := Protect(b, ReadWrite); err != nil {
+	if err := Protect(b, ReadWrite()); err != nil {
 		return err
 	}
 
 	// Wipe the memory region in case of remnant data.
-	for i := range b {
-		b[i] = 0
-	}
+	wipe(b)
 
 	// Free the memory back to the kernel.
 	if err := windows.VirtualFree(_getPtr(b), uintptr(0), 0x8000); err != nil {
@@ -73,11 +69,11 @@ func Free(b []byte) error {
 // Protect modifies the memory protection flags for a specified byte slice.
 func Protect(b []byte, mpf MemoryProtectionFlag) error {
 	var prot int
-	if mpf.flag == ReadWrite.flag {
+	if mpf.flag == ReadWrite().flag {
 		prot = 0x4 // PAGE_READWRITE
-	} else if mpf.flag == ReadOnly.flag {
+	} else if mpf.flag == ReadOnly().flag {
 		prot = 0x2 // PAGE_READ
-	} else if mpf.flag == NoAccess.flag {
+	} else if mpf.flag == NoAccess().flag {
 		prot = 0x1 // PAGE_NOACCESS
 	} else {
 		return ErrInvalidFlag

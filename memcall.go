@@ -1,6 +1,9 @@
 package memcall
 
-import "errors"
+import (
+	"errors"
+	"runtime"
+)
 
 // Structure for typed specification of memory protection constants.
 
@@ -15,13 +18,27 @@ type MemoryProtectionFlag struct {
 }
 
 // NoAccess specifies that the memory should be marked unreadable and immutable.
-var NoAccess = MemoryProtectionFlag{1}
+func NoAccess() MemoryProtectionFlag {
+	return MemoryProtectionFlag{1}
+}
 
 // ReadOnly specifies that the memory should be marked read-only (immutable).
-var ReadOnly = MemoryProtectionFlag{2}
+func ReadOnly() MemoryProtectionFlag {
+	return MemoryProtectionFlag{2}
+}
 
 // ReadWrite specifies that the memory should be made readable and writable.
-var ReadWrite = MemoryProtectionFlag{6}
+func ReadWrite() MemoryProtectionFlag {
+	return MemoryProtectionFlag{6}
+}
 
 // ErrInvalidFlag indicates that a given memory protection flag is undefined.
 var ErrInvalidFlag = errors.New("<memguard::memcall> memory protection flag is undefined")
+
+// Wipes a given byte slice.
+func wipe(buf []byte) {
+	for i := range buf {
+		buf[i] = 0
+	}
+	runtime.KeepAlive(buf)
+}

@@ -33,13 +33,13 @@ func TestCycle(t *testing.T) {
 
 func TestProtect(t *testing.T) {
 	buffer, _ := Alloc(32)
-	if err := Protect(buffer, ReadWrite); err != nil {
+	if err := Protect(buffer, ReadWrite()); err != nil {
 		t.Error(err)
 	}
-	if err := Protect(buffer, ReadOnly); err != nil {
+	if err := Protect(buffer, ReadOnly()); err != nil {
 		t.Error(err)
 	}
-	if err := Protect(buffer, NoAccess); err != nil {
+	if err := Protect(buffer, NoAccess()); err != nil {
 		t.Error(err)
 	}
 	if err := Protect(buffer, MemoryProtectionFlag{4}); err != ErrInvalidFlag {

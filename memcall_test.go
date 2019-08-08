@@ -47,3 +47,15 @@ func TestProtect(t *testing.T) {
 	}
 	Free(buffer)
 }
+
+func TestProtFlags(t *testing.T) {
+	if NoAccess().flag != 1 {
+		t.Error("NoAccess value is", NoAccess().flag)
+	}
+	if ReadOnly().flag != 2 {
+		t.Error("ReadOnly value is", ReadOnly().flag)
+	}
+	if ReadWrite().flag != 6 {
+		t.Error("ReadWrite value is", ReadWrite().flag)
+	}
+}

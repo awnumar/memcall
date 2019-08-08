@@ -1,7 +1,6 @@
 package memcall
 
 import (
-	"errors"
 	"runtime"
 )
 
@@ -33,7 +32,7 @@ func ReadWrite() MemoryProtectionFlag {
 }
 
 // ErrInvalidFlag indicates that a given memory protection flag is undefined.
-var ErrInvalidFlag = errors.New("<memguard::memcall> memory protection flag is undefined")
+const ErrInvalidFlag = "<memguard::memcall> memory protection flag is undefined"
 
 // Wipes a given byte slice.
 func wipe(buf []byte) {

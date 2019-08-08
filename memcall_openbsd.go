@@ -3,6 +3,7 @@
 package memcall
 
 import (
+	"errors"
 	"fmt"
 
 	"golang.org/x/sys/unix"
@@ -70,7 +71,7 @@ func Protect(b []byte, mpf MemoryProtectionFlag) error {
 	} else if mpf.flag == NoAccess().flag {
 		prot = unix.PROT_NONE
 	} else {
-		return ErrInvalidFlag
+		return errors.New(ErrInvalidFlag)
 	}
 
 	// Change the protection value of the byte slice.

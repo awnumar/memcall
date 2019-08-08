@@ -3,6 +3,7 @@
 package memcall
 
 import (
+	"errors"
 	"fmt"
 	"unsafe"
 
@@ -76,7 +77,7 @@ func Protect(b []byte, mpf MemoryProtectionFlag) error {
 	} else if mpf.flag == NoAccess().flag {
 		prot = 0x1 // PAGE_NOACCESS
 	} else {
-		return ErrInvalidFlag
+		return errors.New(ErrInvalidFlag)
 	}
 
 	var oldProtect uint32

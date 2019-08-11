@@ -13,7 +13,7 @@ import (
 func Lock(b []byte) error {
 	// Call mlock.
 	if err := unix.Mlock(b); err != nil {
-		return fmt.Errorf("<memguard::memcall::Lock> could not acquire lock on %p, limit reached? [Err: %s]", &b[0], err)
+		return fmt.Errorf("<memcall> could not acquire lock on %p, limit reached? [Err: %s]", &b[0], err)
 	}
 
 	return nil
@@ -22,7 +22,7 @@ func Lock(b []byte) error {
 // Unlock is a wrapper for munlock(2).
 func Unlock(b []byte) error {
 	if err := unix.Munlock(b); err != nil {
-		return fmt.Errorf("<memguard::memcall::Unlock> could not free lock on %p [Err: %s]", &b[0], err)
+		return fmt.Errorf("<memcall> could not free lock on %p [Err: %s]", &b[0], err)
 	}
 
 	return nil
@@ -33,7 +33,7 @@ func Alloc(n int) ([]byte, error) {
 	// Allocate the memory.
 	b, err := unix.Mmap(-1, 0, n, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_PRIVATE|unix.MAP_ANON|unix.MAP_CONCEAL)
 	if err != nil {
-		return nil, fmt.Errorf("<memguard::memcall::Alloc> could not allocate [Err: %s]", err)
+		return nil, fmt.Errorf("<memcall> could not allocate [Err: %s]", err)
 	}
 
 	// Wipe it just in case there is some remnant data.
@@ -55,7 +55,7 @@ func Free(b []byte) error {
 
 	// Free the memory back to the kernel.
 	if err := unix.Munmap(b); err != nil {
-		return fmt.Errorf("<memguard::memcall::Free> could not deallocate %p [Err: %s]", &b[0], err)
+		return fmt.Errorf("<memcall> could not deallocate %p [Err: %s]", &b[0], err)
 	}
 
 	return nil
@@ -76,7 +76,7 @@ func Protect(b []byte, mpf MemoryProtectionFlag) error {
 
 	// Change the protection value of the byte slice.
 	if err := unix.Mprotect(b, prot); err != nil {
-		return fmt.Errorf("<memguard::memcall::Protect> could not set %d on %p [Err: %s]", prot, &b[0], err)
+		return fmt.Errorf("<memcall> could not set %d on %p [Err: %s]", prot, &b[0], err)
 	}
 
 	return nil
@@ -86,7 +86,7 @@ func Protect(b []byte, mpf MemoryProtectionFlag) error {
 func DisableCoreDumps() error {
 	// Disable core dumps.
 	if err := unix.Setrlimit(unix.RLIMIT_CORE, &unix.Rlimit{Cur: 0, Max: 0}); err != nil {
-		return fmt.Errorf("<memguard::memcall::DisableCoreDumps> could not set rlimit [Err: %s]", err)
+		return fmt.Errorf("<memcall> could not set rlimit [Err: %s]", err)
 	}
 
 	return nil

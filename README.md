@@ -8,5 +8,3 @@ memcall
 This package provides a cross-platform wrapper over some common memory-related system calls.
 
 Please report any issues that you experience.
-
-![imports](https://i.imgur.com/kvTgGQa.png)

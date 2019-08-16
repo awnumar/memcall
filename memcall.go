@@ -4,14 +4,12 @@ import (
 	"runtime"
 )
 
-// Structure for typed specification of memory protection constants.
-
 // MemoryProtectionFlag specifies some particular memory protection flag.
 type MemoryProtectionFlag struct {
-	// NOACCESS  := 1 (00000001)
-	// READ      := 2 (00000010)
-	// WRITE     := 4 (00000100) // unused
-	// READWRITE := 6 (00000110)
+	// NOACCESS  := 1 (0001)
+	// READ      := 2 (0010)
+	// WRITE     := 4 (0100) // unused
+	// READWRITE := 6 (0110)
 
 	flag byte
 }

@@ -25,6 +25,8 @@ ciphertext := crypto.Encrypt(plaintext, k.Bytes())
 _ = k.Destroy()
 ```
 
+[Full documentation](https://pkg.go.dev/github.com/awnumar/memcall?tab=doc).
+
 #### Todo:
 
 - Realloc support.

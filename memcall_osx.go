@@ -35,9 +35,6 @@ func alloc(size int, settings ...Flag) ([]byte, error) {
 		return nil, fmt.Errorf("<memcall> could not allocate [Err: %s]", err)
 	}
 
-	// Specify that the memory region should not be included in core dumps
-	unix.Madvise(region, unix.MADV_DONTDUMP)
-
 	// Wipe the memory region in case it has remnant data
 	Wipe(region)
 

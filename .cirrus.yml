@@ -14,7 +14,7 @@ linux_task:
 
 osx_task:
   osx_instance:
-    image: mojave-base
+    image: catalina-base
   env:
     GO111MODULE: on
     GOPATH: /tmp/go

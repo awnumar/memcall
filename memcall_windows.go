@@ -25,14 +25,11 @@ func alloc(size int, settings ...Flag) ([]byte, error) {
 	}
 
 	// Allocate the memory region
-	ptr, err := windows.VirtualAlloc(_zero, size, 0x1000|0x2000, 0x04) // PAGE_READWRITE
+	ptr, err := windows.VirtualAlloc(_zero, uintptr(size), 0x1000|0x2000, 0x04) // PAGE_READWRITE
 	if err != nil {
 		return nil, fmt.Errorf("<memcall> could not allocate [Err: %s]", err)
 	}
 	region := _getBytes(ptr, int(size), int(size))
-
-	// Specify that the memory region should not be included in core dumps
-	unix.Madvise(region, unix.MADV_DONTDUMP)
 
 	// Wipe the memory region in case it has remnant data
 	Wipe(region)
@@ -60,16 +57,16 @@ func _apply(region []byte, flag int, lock bool) error {
 	}
 	if lock {
 		if err := windows.VirtualLock(_getPtr(region), uintptr(len(region))); err != nil {
-			return fmt.Errorf("<memcall> could not lock %p, system limit reached? [Err: %s]", &b[0], err)
+			return fmt.Errorf("<memcall> could not lock %p, system limit reached? [Err: %s]", &region[0], err)
 		}
 	} else {
 		if err := windows.VirtualUnlock(_getPtr(region), uintptr(len(region))); err != nil {
-			return fmt.Errorf("<memcall> could not unlock %p [Err: %s]", &b[0], err)
+			return fmt.Errorf("<memcall> could not unlock %p [Err: %s]", &region[0], err)
 		}
 	}
 	var _ uint32
 	if err := windows.VirtualProtect(_getPtr(region), uintptr(len(region)), prot, &_); err != nil {
-		return fmt.Errorf("<memcall> could not set %d permissions on %p [Err: %s]", prot, &b[0], err)
+		return fmt.Errorf("<memcall> could not set %d permissions on %p [Err: %s]", prot, &region[0], err)
 	}
 	return nil
 }
@@ -82,8 +79,8 @@ func free(region []byte) error {
 		return err
 	}
 	Wipe(region)
-	if err := windows.VirtualFree(_getPtr(b), uintptr(0), 0x8000); err != nil {
-		return fmt.Errorf("<memcall> could not deallocate %p [Err: %s]", &b[0], err)
+	if err := windows.VirtualFree(_getPtr(region), uintptr(0), 0x8000); err != nil {
+		return fmt.Errorf("<memcall> could not deallocate %p [Err: %s]", &region[0], err)
 	}
 	return nil
 }

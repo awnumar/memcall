@@ -64,9 +64,9 @@ func _apply(region []byte, flag int, lock bool) error {
 			return fmt.Errorf("<memcall> could not unlock %p [Err: %s]", &region[0], err)
 		}
 	}
-	var _ uint32
-	if err := windows.VirtualProtect(_getPtr(region), uintptr(len(region)), prot, &_); err != nil {
-		return fmt.Errorf("<memcall> could not set %d permissions on %p [Err: %s]", prot, &region[0], err)
+	var oldFlag uint32
+	if err := windows.VirtualProtect(_getPtr(region), uintptr(len(region)), flag, &oldFlag); err != nil {
+		return fmt.Errorf("<memcall> could not set %d permissions on %p [Err: %s]", flag, &region[0], err)
 	}
 	return nil
 }

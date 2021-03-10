@@ -1,6 +1,10 @@
 package memcall
 
-import "testing"
+import (
+	"fmt"
+	"strings"
+	"testing"
+)
 
 func TestCycle(t *testing.T) {
 	buffer, err := Alloc(32)
@@ -57,5 +61,22 @@ func TestProtFlags(t *testing.T) {
 	}
 	if ReadWrite().flag != 6 {
 		t.Error("ReadWrite value is", ReadWrite().flag)
+	}
+}
+
+func TestGetStartPtr(t *testing.T) {
+	str := fmt.Sprintf("<memcall> could not deallocate %p", _getStartPtr(nil))
+	if !strings.HasPrefix(str, "<memcall> could not deallocate") {
+		t.Error("Formatted start pointer error is", str)
+	}
+
+	str = fmt.Sprintf("<memcall> could not deallocate %p", _getStartPtr([]byte{}))
+	if !strings.HasPrefix(str, "<memcall> could not deallocate") {
+		t.Error("Formatted start pointer error is", str)
+	}
+
+	str = fmt.Sprintf("<memcall> could not deallocate %p", _getStartPtr([]byte{1, 2, 3}))
+	if !strings.HasPrefix(str, "<memcall> could not deallocate") {
+		t.Error("Formatted start pointer error is", str)
 	}
 }

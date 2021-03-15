@@ -35,12 +35,11 @@ windows_task:
   env:
     GO111MODULE: on
     GOPATH: C:\golang
-    PATH: ${GOPATH}\bin:${PATH}
+    PATH: ${GOPATH}\bin:C:\Program Files\Go\bin:${PATH}
     CIRRUS_WORKING_DIR: C:\golang\src\github.com\${CIRRUS_REPO_FULL_NAME}
   install_script:
     - choco install -y golang
-    - refreshenv
-    - where go
+    - echo %PATH%
   build_script:
     - go version
     - go get ./...

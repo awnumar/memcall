@@ -14,7 +14,7 @@ linux_task:
 
 osx_task:
   osx_instance:
-    image: mojave-base
+    image: big-sur-base
   env:
     GO111MODULE: on
     GOPATH: /tmp/go
@@ -39,7 +39,8 @@ windows_task:
     CIRRUS_WORKING_DIR: C:\golang\src\github.com\${CIRRUS_REPO_FULL_NAME}
   install_script:
     - choco install -y golang
-    - type C:\ProgramData\chocolatey\logs\chocolatey.log
+    - refreshenv
+    - where go
   build_script:
     - go version
     - go get ./...

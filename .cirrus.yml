@@ -40,7 +40,10 @@ windows_task:
   install_script:
     - choco install -y golang
     - echo %PATH%
+    - refreshenv
+    - echo %PATH%
   build_script:
+    - echo %PATH%
     - go version
     - go get ./...
     - go build -race -v ./...

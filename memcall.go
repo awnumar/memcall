@@ -58,6 +58,6 @@ func _getPtr(b []byte) uintptr {
 }
 
 func _getBytes(ptr uintptr, len int, cap int) []byte {
-	var sl = reflect.SliceHeader{ptr, len, cap}
+	var sl = reflect.SliceHeader{Data: ptr, Len: len, Cap: cap}
 	return *(*[]byte)(unsafe.Pointer(&sl))
 }

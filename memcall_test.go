@@ -24,6 +24,14 @@ func TestCycle(t *testing.T) {
 	if err := Lock(buffer); err != nil {
 		t.Error(err)
 	}
+
+	for i := range buffer {
+		buffer[i] = 1
+		if buffer[i] != 1 {
+			t.Error("read back data different to what was written")
+		}
+	}
+
 	if err := Unlock(buffer); err != nil {
 		t.Error(err)
 	}

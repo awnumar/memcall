@@ -1,4 +1,4 @@
-// +build !windows,!darwin,!openbsd,!freebsd,!aix
+// +build aix
 
 package memcall
 
@@ -9,14 +9,15 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// Lock is a wrapper for mlock(2), with extra precautions.
+// Lock is a wrapper for mlock(2).
 func Lock(b []byte) error {
-	// Advise the kernel not to dump. Ignore failure.
-	unix.Madvise(b, unix.MADV_DONTDUMP)
-
-	// Call mlock.
 	if err := unix.Mlock(b); err != nil {
-		return fmt.Errorf("<memcall> could not acquire lock on %p, limit reached? [Err: %s]", _getStartPtr(b), err)
+		if errors.Is(err, unix.EPERM) {
+			// per mlock(2): The calling process must have the root user authority to use this subroutine.
+			return fmt.Errorf("<memcall> could not acquire lock on %p, do you have PV_ROOT? [Err: %s]", _getStartPtr(b), err)
+		} else {
+			return fmt.Errorf("<memcall> could not acquire lock on %p, limit reached? [Err: %s]", _getStartPtr(b), err)
+		}
 	}
 
 	return nil
@@ -25,7 +26,12 @@ func Lock(b []byte) error {
 // Unlock is a wrapper for munlock(2).
 func Unlock(b []byte) error {
 	if err := unix.Munlock(b); err != nil {
-		return fmt.Errorf("<memcall> could not free lock on %p [Err: %s]", _getStartPtr(b), err)
+		if errors.Is(err, unix.EPERM) {
+			// per munlock(2): The calling process must have the root user authority to use this subroutine.
+			return fmt.Errorf("<memcall> could not free lock on %p, do you have PV_ROOT? [Err: %s]", _getStartPtr(b), err)
+		} else {
+			return fmt.Errorf("<memcall> could not free lock on %p [Err: %s]", _getStartPtr(b), err)
+		}
 	}
 
 	return nil
@@ -34,7 +40,7 @@ func Unlock(b []byte) error {
 // Alloc allocates a byte slice of length n and returns it.
 func Alloc(n int) ([]byte, error) {
 	// Allocate the memory.
-	b, err := unix.Mmap(-1, 0, n, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_PRIVATE|unix.MAP_ANONYMOUS)
+	b, err := unix.Mmap(-1, 0, n, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_PRIVATE|unix.MAP_ANON)
 	if err != nil {
 		return nil, fmt.Errorf("<memcall> could not allocate [Err: %s]", err)
 	}

@@ -1,4 +1,4 @@
-// +build aix
+//go:build aix
 
 package memcall
 

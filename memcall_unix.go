@@ -1,5 +1,4 @@
-// +build !windows,!darwin,!openbsd,!freebsd,!aix,!netbsd
-
+//go:build !windows && !darwin && !openbsd && !freebsd && !aix && !netbsd
 
 package memcall
 

@@ -1,4 +1,5 @@
-//go:build !windows && !darwin && !openbsd && !freebsd && !aix && !netbsd
+//go:build netbsd
+// +build netbsd
 
 package memcall
 
@@ -11,9 +12,6 @@ import (
 
 // Lock is a wrapper for mlock(2), with extra precautions.
 func Lock(b []byte) error {
-	// Advise the kernel not to dump. Ignore failure.
-	unix.Madvise(b, unix.MADV_DONTDUMP)
-
 	// Call mlock.
 	if err := unix.Mlock(b); err != nil {
 		return fmt.Errorf("<memcall> could not acquire lock on %p, limit reached? [Err: %s]", _getStartPtr(b), err)
@@ -34,7 +32,7 @@ func Unlock(b []byte) error {
 // Alloc allocates a byte slice of length n and returns it.
 func Alloc(n int) ([]byte, error) {
 	// Allocate the memory.
-	b, err := unix.Mmap(-1, 0, n, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_PRIVATE|unix.MAP_ANONYMOUS)
+	b, err := unix.Mmap(-1, 0, n, unix.PROT_READ|unix.PROT_WRITE, unix.MAP_PRIVATE|unix.MAP_ANON)
 	if err != nil {
 		return nil, fmt.Errorf("<memcall> could not allocate [Err: %s]", err)
 	}

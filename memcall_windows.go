@@ -20,7 +20,12 @@ func Lock(b []byte) error {
 
 // Unlock is a wrapper for windows.VirtualUnlock()
 func Unlock(b []byte) error {
-	if err := windows.VirtualUnlock(_getPtr(b), uintptr(len(b))); err != nil {
+	err := windows.VirtualUnlock(_getPtr(b), uintptr(len(b)))
+	if err != nil {
+		// Ignore ERROR_NOT_LOCKED (0x009E) to match POSIX behavior
+		if errno, ok := err.(windows.Errno); ok && errno == windows.ERROR_NOT_LOCKED {
+			return nil
+		}
 		return fmt.Errorf("<memcall> could not free lock on %p [Err: %s]", _getStartPtr(b), err)
 	}
 

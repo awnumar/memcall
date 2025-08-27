@@ -36,7 +36,7 @@ func Alloc(n int) ([]byte, error) {
 	}
 
 	// Convert this pointer to a slice.
-	b := _getBytes(ptr, n, n)
+	b := unsafe.Slice((*byte)(unsafe.Pointer(ptr)), n)
 
 	// Wipe it just in case there is some remnant data.
 	wipe(b)

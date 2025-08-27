@@ -5,6 +5,7 @@ package memcall
 import (
 	"errors"
 	"fmt"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )

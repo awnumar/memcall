@@ -81,12 +81,24 @@ func Protect(b []byte, mpf MemoryProtectionFlag) error {
 	return nil
 }
 
-// DisableCoreDumps disables core dumps on Unix systems.
+// DisableCoreDumps disables core dumps on Unix systems, by setting both soft and hard limits to zero.
 func DisableCoreDumps() error {
 	// Disable core dumps.
 	if err := unix.Setrlimit(unix.RLIMIT_CORE, &unix.Rlimit{Cur: 0, Max: 0}); err != nil {
 		return fmt.Errorf("<memcall> could not set rlimit [Err: %s]", err)
 	}
+	return nil
+}
 
+// DisableCoreDumpsSoft disables core dumps on Unix systems, by setting soft (current) limit to zero.
+// Warning: a process may reverse this by re-configuring its own soft limit.
+func DisableCoreDumpsSoft() error {
+	currentLimits := &unix.Rlimit{}
+	if err := unix.Getrlimit(unix.RLIMIT_CORE, currentLimits); err != nil {
+		return fmt.Errorf("<memcall> could not set rlimit [Err: %s]", err)
+	}
+	if err := unix.Setrlimit(unix.RLIMIT_CORE, &unix.Rlimit{Cur: 0, Max: currentLimits.Max}); err != nil {
+		return fmt.Errorf("<memcall> could not set rlimit [Err: %s]", err)
+	}
 	return nil
 }

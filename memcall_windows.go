@@ -87,3 +87,6 @@ func Protect(b []byte, mpf MemoryProtectionFlag) error {
 
 // DisableCoreDumps is included for compatibility reasons. On windows it is a no-op function.
 func DisableCoreDumps() error { return nil }
+
+// DisableCoreDumpsSoft is included for compatibility reasons. On windows it is a no-op function.
+func DisableCoreDumpsSoft() error { return nil }
